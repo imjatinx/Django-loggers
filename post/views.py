@@ -1,12 +1,23 @@
-from django.shortcuts import render, HttpResponse, render
+import logging
+from django.shortcuts import render
 
-# Create your views here.
+# Get the logger instance configured in your Django settings
+logger = logging.getLogger(__name__)
+
+logger.addHandler('file')
+
 def home(request):
     if request.method == 'POST':
         num = request.POST.get('num')
         if num == "1":
-            print("===> Test home function")
+            logger.warning("===> Test home function")
         else:
-            raise ValueError("A test error occurred!")
+            try:
+                div = 4 / int(num)
+                logger.info("Division result: %f", div)
+            except ZeroDivisionError:
+                logger.error("Division by zero occurred.")
+                # Optionally, you can re-raise the exception for Django to handle it further.
+                raise
 
     return render(request, 'post/home.html')
